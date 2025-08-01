@@ -1,17 +1,521 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>text web title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简约个人网站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 40px; }
-        h1 { color: #333; }
+        :root {
+            --primary-color: #3498db;
+            --text-color: #333;
+            --bg-color: #f5f5f5; /* 灰白背景 */
+            --sidebar-bg: #eaeaea; /* 浅灰侧边栏 */
+            --border-color: #d0d0d0;
+            --footer-bg: #e0e0e0; /* 灰色底部栏 */
+            --footer-height: 50px; /* 降低高度 */
+        }
+        
+        .dark-mode {
+            --primary-color: #3498db;
+            --text-color: #f0f0f0;
+            --bg-color: #1a1a1a;
+            --sidebar-bg: #222;
+            --border-color: #444;
+            --footer-bg: #121212;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, opacity 0.5s, transform 0.5s;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 页面加载动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        
+        /* 左侧状态栏样式 - 固定在左侧 */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            padding: 30px 20px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .avatar {
+            width: 160px;
+            height: 160px;
+            background-color: #000;
+            border-radius: 50%;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .avatar i {
+            font-size: 5rem;
+            color: #555;
+        }
+        
+        /* 模式切换按钮 */
+        .mode-toggle-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mode-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            gap: 8px;
+        }
+        
+        .toggle-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-circle i {
+            font-size: 1rem;
+        }
+        
+        .mode-toggle:hover .toggle-circle {
+            transform: scale(1.05);
+        }
+        
+        /* 模式切换提示 */
+        .mode-notification {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            border-radius: 0 0 4px 4px;
+        }
+        
+        .mode-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 右侧内容区域 */
+        .main-content {
+            flex: 1;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+            text-align: left;
+            font-weight: 600;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+        
+        .content-section {
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+        
+        .bilingual {
+            margin-bottom: 30px;
+        }
+        
+        .bilingual p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .bilingual p:last-child {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .dark-mode .bilingual p:last-child {
+            color: #aaa;
+        }
+        
+        /* 底部栏样式 - 完全修改 */
+        footer {
+            background-color: var(--footer-bg);
+            height: var(--footer-height);
+            padding: 0 25px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem; /* 减小字体 */
+            display: flex;
+            justify-content: flex-start; /* 左对齐 */
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .license {
+            color: #666;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        
+        .dark-mode .license {
+            color: #aaa;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            height: 100%;
+            align-items: center;
+        }
+        
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .dark-mode .footer-links a {
+            color: #aaa;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .lang-switch {
+            display: flex;
+            gap: 10px;
+            height: 100%;
+            align-items: center;
+            margin-left: auto; /* 右对齐 */
+        }
+        
+        .lang-switch button {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .dark-mode .lang-switch button {
+            color: #aaa;
+        }
+        
+        .lang-switch button.active {
+            color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.1);
+            font-weight: bold;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 90px 20px 40px;
+            }
+            
+            .main-content {
+                padding: 40px 25px 60px;
+            }
+            
+            h1 {
+                font-size: 3rem;
+                text-align: center;
+            }
+            
+            .avatar {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .mode-toggle-container {
+                top: 25px;
+                left: 25px;
+            }
+            
+            footer {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 10px 20px;
+                gap: 15px;
+            }
+            
+            .license, .footer-links, .lang-switch {
+                height: auto;
+                padding: 5px 0;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .bilingual p {
+                font-size: 1.05rem;
+            }
+            
+            .sidebar {
+                padding: 70px 20px 30px;
+            }
+            
+            .mode-toggle-container {
+                top: 15px;
+                left: 15px;
+            }
+            
+            .toggle-circle {
+                width: 32px;
+                height: 32px;
+            }
+            
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 10px 20px;
+            }
+            
+            .lang-switch {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>网站正在改造中……</h1>
-    <h1>The website is undergoing a makeover……</h1>
-    <p>正如标题所示，目前网站正在改造。请等待</p>
-    <p>As the title says, the website is getting a makeover.</p>
-    <p>Please wait…</p>
+    <div class="container">
+        <!-- 左侧状态栏 - 固定在左侧 -->
+        <aside class="sidebar">
+            <!-- 模式切换按钮和文字 -->
+            <div class="mode-toggle-container">
+                <button class="mode-toggle" id="modeToggle">
+                    <div class="toggle-circle">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <span id="modeText">夜间模式</span>
+                </button>
+            </div>
+            
+            <!-- 模式切换提示 -->
+            <div class="mode-notification" id="modeNotification"></div>
+            
+            <div class="avatar">
+                <i class="fas fa-user"></i>
+            </div>
+        </aside>
+        
+        <!-- 右侧内容区域 -->
+        <main class="main-content">
+            <h1>欢迎进入个人网站！</h1>
+            
+            <div class="content-section">
+                <div class="bilingual" id="introText">
+                    <p class="lang-zh">这个简约的个人网站采用灰白配色方案，完美融合了功能性与美学设计。左侧状态栏采用浅灰色背景，整体页面以灰白为主色调，营造出专业而舒适的氛围。</p>
+                    <p class="lang-en">This minimalist personal website features a gray and white color scheme, perfectly blending functionality and aesthetics. The left sidebar has a light gray background, and the overall page is dominated by gray and white tones, creating a professional and comfortable atmosphere.</p>
+                    
+                    <p class="lang-zh">网站包含精心设计的元素：启动动画、深色/浅色模式切换、响应式布局以及中英双语支持。所有功能都使用纯HTML、CSS和JavaScript实现。</p>
+                    <p class="lang-en">The website includes carefully designed elements: launch animation, dark/light mode switching, responsive layout, and bilingual support. All features are implemented using pure HTML, CSS, and JavaScript.</p>
+                    
+                    <p class="lang-zh">您可以根据需要自由修改内容，调整颜色方案以匹配您的个人风格。这个模板完全遵循MIT协议，您可以自由使用和修改。</p>
+                    <p class="lang-en">You can freely modify the content as needed or adjust the color scheme to match your personal style. This template fully adheres to the MIT license, allowing you to use and modify it freely.</p>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <div class="bilingual" id="featureText">
+                    <h2 class="lang-zh">技术特点</h2>
+                    <h2 class="lang-en">Technical Features</h2>
+                    
+                    <p class="lang-zh">• 优雅的启动动画效果，提升用户体验</p>
+                    <p class="lang-en">• Elegant launch animation to enhance user experience</p>
+                    
+                    <p class="lang-zh">• 响应式设计，适配各种设备屏幕</p>
+                    <p class="lang-en">• Responsive design that adapts to various device screens</p>
+                    
+                    <p class="lang-zh">• 深色/浅色模式切换，带用户偏好记忆</p>
+                    <p class="lang-en">• Dark/light mode switching with user preference memory</p>
+                    
+                    <p class="lang-zh">• 完整的中英双语支持，一键切换</p>
+                    <p class="lang-en">• Complete bilingual support with one-click switching</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 底部栏 - 完全左对齐 -->
+    <footer>
+        <div class="license">遵循MIT协议</div>
+        
+        <div class="footer-links">
+            <a href="index.html" class="lang-zh">首页</a>
+            <a href="index.html" class="lang-en">Home</a>
+            <a href="#" class="lang-zh">项目</a>
+            <a href="#" class="lang-en">Projects</a>
+            <a href="#" class="lang-zh">博客</a>
+            <a href="#" class="lang-en">Blog</a>
+            <a href="#" class="lang-zh">关于</a>
+            <a href="#" class="lang-en">About</a>
+        </div>
+        
+        <div class="lang-switch">
+            <button id="zhBtn" class="active">中文</button>
+            <button id="enBtn">English</button>
+        </div>
+    </footer>
+    
+    <script>
+        // 页面加载后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 夜间模式切换功能
+            const modeToggle = document.getElementById('modeToggle');
+            const modeText = document.getElementById('modeText');
+            const modeNotification = document.getElementById('modeNotification');
+            const body = document.body;
+            
+            // 检查本地存储中是否有模式设置
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                body.classList.add('dark-mode');
+                updateModeUI();
+            }
+            
+            modeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                
+                // 显示通知
+                if (body.classList.contains('dark-mode')) {
+                    modeNotification.textContent = '已切换至夜间模式！';
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    modeNotification.textContent = '已切换至日间模式！';
+                    localStorage.setItem('darkMode', 'disabled');
+                }
+                
+                modeNotification.classList.add('show');
+                updateModeUI();
+                
+                // 3秒后隐藏通知
+                setTimeout(() => {
+                    modeNotification.classList.remove('show');
+                }, 3000);
+            });
+            
+            function updateModeUI() {
+                if (body.classList.contains('dark-mode')) {
+                    modeText.textContent = '日间模式';
+                    modeToggle.querySelector('i').className = 'fas fa-sun';
+                } else {
+                    modeText.textContent = '夜间模式';
+                    modeToggle.querySelector('i').className = 'fas fa-moon';
+                }
+            }
+            
+            // 语言切换功能
+            const zhBtn = document.getElementById('zhBtn');
+            const enBtn = document.getElementById('enBtn');
+            
+            // 初始化语言
+            let currentLang = localStorage.getItem('lang') || 'zh';
+            setLanguage(currentLang);
+            
+            zhBtn.addEventListener('click', () => {
+                setLanguage('zh');
+                localStorage.setItem('lang', 'zh');
+            });
+            
+            enBtn.addEventListener('click', () => {
+                setLanguage('en');
+                localStorage.setItem('lang', 'en');
+            });
+            
+            function setLanguage(lang) {
+                // 更新按钮状态
+                zhBtn.classList.toggle('active', lang === 'zh');
+                enBtn.classList.toggle('active', lang === 'en');
+                
+                // 切换内容显示
+                document.querySelectorAll('.lang-zh').forEach(el => {
+                    el.style.display = lang === 'zh' ? 'block' : 'none';
+                });
+                
+                document.querySelectorAll('.lang-en').forEach(el => {
+                    el.style.display = lang === 'en' ? 'block' : 'none';
+                });
+                
+                // 更新模式按钮文本
+                if (body.classList.contains('dark-mode')) {
+                    modeText.textContent = lang === 'zh' ? '日间模式' : 'Light Mode';
+                } else {
+                    modeText.textContent = lang === 'zh' ? '夜间模式' : 'Dark Mode';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
