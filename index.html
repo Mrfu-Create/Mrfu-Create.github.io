@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>简约个人网站</title>
+    <title>个人网站</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -13,7 +13,7 @@
             --sidebar-bg: #eaeaea;
             --border-color: #d0d0d0;
             --footer-bg: #e0e0e0;
-            --footer-height: 40px;
+            --footer-height: 120px; /* 增加高度 */
         }
         
         .dark-mode {
@@ -196,25 +196,30 @@
             color: #aaa;
         }
         
-        /* 底部栏 - 完全左对齐 */
+        /* 底部栏 - 垂直排列，左对齐 */
         footer {
             background-color: var(--footer-bg);
-            height: var(--footer-height);
-            padding: 0 25px;
+            min-height: var(--footer-height);
+            padding: 20px 25px;
             border-top: 1px solid var(--border-color);
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            gap: 25px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .footer-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
         }
         
         .license {
             color: #666;
-            display: flex;
-            align-items: center;
-            height: 100%;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
         }
         
         .dark-mode .license {
@@ -223,16 +228,16 @@
         
         .footer-links {
             display: flex;
-            gap: 20px;
-            height: 100%;
-            align-items: center;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
         }
         
         .footer-links a {
             color: #666;
             text-decoration: none;
             transition: color 0.3s;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
         }
         
         .dark-mode .footer-links a {
@@ -246,9 +251,6 @@
         .lang-switch {
             display: flex;
             gap: 10px;
-            height: 100%;
-            align-items: center;
-            margin-left: auto;
         }
         
         .lang-switch button {
@@ -256,8 +258,8 @@
             border: none;
             color: #666;
             cursor: pointer;
-            font-size: 0.75rem;
-            padding: 3px 8px;
+            font-size: 0.85rem;
+            padding: 5px 10px;
             border-radius: 4px;
             transition: all 0.3s;
         }
@@ -297,7 +299,8 @@
         
         <!-- 右侧内容区域 -->
         <main class="main-content">
-            <h1>欢迎进入个人网站！</h1>
+            <h1 class="lang-zh">欢迎进入个人网站！</h1>
+            <h1 class="lang-en">Welcome to Personal Website!</h1>
             
             <div class="content-section">
                 <div class="bilingual" id="introText">
@@ -333,22 +336,30 @@
         </main>
     </div>
     
-    <!-- 底部栏 -->
+    <!-- 底部栏 - 垂直排列，左对齐 -->
     <footer>
-        <div class="license">遵循MIT协议</div>
-        
-        <div class="footer-links">
-            <a href="index.html" class="lang-zh">首页</a>
-            <a href="index.html" class="lang-en">Home</a>
-            <a href="#" class="lang-zh">项目</a>
-            <a href="#" class="lang-en">Projects</a>
-            <a href="#" class="lang-zh">博客</a>
-            <a href="#" class="lang-en">Blog</a>
+        <div class="footer-section">
+            <div class="license">遵循MIT协议</div>
         </div>
         
-        <div class="lang-switch">
-            <button id="zhBtn" class="active">中文</button>
-            <button id="enBtn">English</button>
+        <div class="footer-section">
+            <div class="footer-links">
+                <a href="index.html" class="lang-zh">首页</a>
+                <a href="index.html" class="lang-en">Home</a>
+                <a href="#" class="lang-zh">项目</a>
+                <a href="#" class="lang-en">Projects</a>
+                <a href="#" class="lang-zh">博客</a>
+                <a href="#" class="lang-en">Blog</a>
+                <a href="#" class="lang-zh">关于</a>
+                <a href="#" class="lang-en">About</a>
+            </div>
+        </div>
+        
+        <div class="footer-section">
+            <div class="lang-switch">
+                <button id="zhBtn" class="active">中文</button>
+                <button id="enBtn">English</button>
+            </div>
         </div>
     </footer>
     
@@ -370,12 +381,13 @@
             modeToggle.addEventListener('click', () => {
                 body.classList.toggle('dark-mode');
                 
-                // 显示通知
+                // 更新当前语言下的通知文本
+                const currentLang = localStorage.getItem('lang') || 'zh';
                 if (body.classList.contains('dark-mode')) {
-                    modeNotification.textContent = '已切换至夜间模式！';
+                    modeNotification.textContent = currentLang === 'zh' ? '已切换至夜间模式！' : 'Switched to Night Mode!';
                     localStorage.setItem('darkMode', 'enabled');
                 } else {
-                    modeNotification.textContent = '已切换至日间模式！';
+                    modeNotification.textContent = currentLang === 'zh' ? '已切换至日间模式！' : 'Switched to Day Mode!';
                     localStorage.setItem('darkMode', 'disabled');
                 }
                 
@@ -389,11 +401,12 @@
             });
             
             function updateModeUI() {
+                const currentLang = localStorage.getItem('lang') || 'zh';
                 if (body.classList.contains('dark-mode')) {
-                    modeText.textContent = '日间模式';
+                    modeText.textContent = currentLang === 'zh' ? '日间模式' : 'Light Mode';
                     modeToggle.querySelector('i').className = 'fas fa-sun';
                 } else {
-                    modeText.textContent = '夜间模式';
+                    modeText.textContent = currentLang === 'zh' ? '夜间模式' : 'Dark Mode';
                     modeToggle.querySelector('i').className = 'fas fa-moon';
                 }
             }
@@ -409,11 +422,13 @@
             zhBtn.addEventListener('click', () => {
                 setLanguage('zh');
                 localStorage.setItem('lang', 'zh');
+                updateModeUI(); // 更新模式按钮文本
             });
             
             enBtn.addEventListener('click', () => {
                 setLanguage('en');
                 localStorage.setItem('lang', 'en');
+                updateModeUI(); // 更新模式按钮文本
             });
             
             function setLanguage(lang) {
@@ -429,13 +444,6 @@
                 document.querySelectorAll('.lang-en').forEach(el => {
                     el.style.display = lang === 'en' ? 'block' : 'none';
                 });
-                
-                // 更新模式按钮文本
-                if (body.classList.contains('dark-mode')) {
-                    modeText.textContent = lang === 'zh' ? '日间模式' : 'Light Mode';
-                } else {
-                    modeText.textContent = lang === 'zh' ? '夜间模式' : 'Dark Mode';
-                }
             }
         });
     </script>
